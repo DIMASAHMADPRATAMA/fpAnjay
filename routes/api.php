@@ -11,6 +11,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Admin\ProductAdminController;
+use App\Http\Controllers\MidtransController;
+
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -61,12 +66,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [OrderController::class, 'checkout']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
-    // 💬 Pesan
-    Route::get('/messages', [MessageController::class, 'index']);
-    Route::post('/messages/send', [MessageController::class, 'send']);
+    
 
     // 💳 Midtrans
-    Route::post('/midtrans/transaction', [PaymentController::class, 'createTransaction']);
+    Route::post('/midtrans/transaction', [MidtransController::class, 'createTransaction']);
     Route::get('/payment/snap/{orderId}', [PaymentController::class, 'generateSnapToken']);
 
     // 🛠 Debug opsional
