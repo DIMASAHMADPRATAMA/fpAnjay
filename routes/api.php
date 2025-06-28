@@ -88,4 +88,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/products/create', [ProductAdminController::class, 'create']);
         // Tambahkan update/delete bila diperlukan
     });
+
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/messages', [MessageController::class, 'index']);
+        Route::post('/messages', [MessageController::class, 'store']);
+});
+
 });

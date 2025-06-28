@@ -8,8 +8,9 @@ class MidtransConfig
 {
     public static function init()
     {
-        Config::$serverKey = 'Mid-server-TA6HDpYixqV_R0bDgtjF1uO8'; // ← Ganti dengan server key Midtrans sandbox
-        Config::$isProduction = false;
+        // Ambil kunci dari .env
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false); // false = sandbox
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }

@@ -9,11 +9,25 @@ use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
+    // ✅ Ambil semua item keranjang untuk user saat ini
     public function index()
     {
-        return Cart::with('product')->where('user_id', Auth::id())->get();
+        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
+
+        foreach ($cartItems as $item) {
+            if ($item->product && $item->product->image_url) {
+                // LANGSUNG pakai image_url karena itu sudah berupa URL lengkap
+                $item->product->image = $item->product->image_url;
+            } else {
+                // Fallback ke default image lokal
+                $item->product->image = asset('images/default.png');
+            }
+        }
+
+        return response()->json($cartItems);
     }
 
+    // ✅ Tambahkan item ke keranjang atau update jumlah
     public function add(Request $request)
     {
         $validated = $request->validate([
@@ -29,9 +43,10 @@ class CartController extends Controller
         return response()->json($cart);
     }
 
+    // ✅ Hapus item dari keranjang
     public function destroy($id)
     {
-        $cart = Cart::findOrFail($id);
+        $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
         $cart->delete();
 
         return response()->json(['message' => 'Item dihapus dari keranjang']);
