@@ -39,6 +39,23 @@
       background-color: #0056b3;
     }
 
+    .btn-edit {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-message {
+      background-color: #17a2b8;
+      color: white;
+    }
+
     .success-message {
       background-color: #d4edda;
       color: #155724;
@@ -90,6 +107,12 @@
       border-radius: 12px;
       font-size: 12px;
     }
+
+    .action-buttons a,
+    .action-buttons form {
+      display: inline-block;
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
@@ -111,6 +134,7 @@
           <th>Kategori</th>
           <th>Deskripsi</th>
           <th>Gambar</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -127,6 +151,14 @@
               <em>Tidak ada gambar</em>
             @endif
           </td>
+          <td class="action-buttons">
+            <a href="{{ route('admin.products.edit', $p->id) }}" class="add-btn btn-edit">✏️ Edit</a>
+            <form action="{{ route('admin.products.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="add-btn btn-delete">🗑️ Hapus</button>
+            </form>
+          </td>
         </tr>
         @endforeach
       </tbody>
@@ -134,7 +166,7 @@
   </div>
 
   <div class="section">
-    <h2>Daftar Pengguna Terdaftar</h2>
+    <h2>Daftar Pengguna</h2>
 
     <table>
       <thead>
@@ -142,7 +174,8 @@
           <th>Nama</th>
           <th>Email</th>
           <th>Role</th>
-          <th>Terdaftar Sejak</th>
+          <th>Terdaftar</th>
+          <th>Aksi</th>
         </tr>
       </thead>
       <tbody>
@@ -158,6 +191,9 @@
             @endif
           </td>
           <td>{{ $user->created_at->format('d M Y') }}</td>
+          <td>
+            <a href="{{ route('admin.chat', $user->id) }}" class="add-btn btn-message">💬 Pesan</a>
+          </td>
         </tr>
         @endforeach
       </tbody>
