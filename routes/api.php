@@ -9,13 +9,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Admin\ProductAdminController;
 use App\Http\Controllers\MidtransController;
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -62,15 +58,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/add', [CartController::class, 'add']);
     Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 
-    // 🧾 Checkout & Riwayat
+    // 🧾 Checkout & Riwayat Order
     Route::post('/checkout', [OrderController::class, 'checkout']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
-    
-
-    // 💳 Midtrans
+    // 💳 Midtrans Payment
     Route::post('/midtrans/transaction', [MidtransController::class, 'createTransaction']);
-    Route::get('/payment/snap/{orderId}', [PaymentController::class, 'generateSnapToken']);
+    Route::post('/midtrans/callback', [MidtransController::class, 'handleCallback']);
 
     // 🛠 Debug opsional
     Route::post('/debug-update', function (Request $request) {
@@ -85,13 +79,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ADMIN ROUTES
+    | ADMIN ROUTES (Khusus untuk admin, middleware: is_admin)
     |--------------------------------------------------------------------------
     */
     Route::middleware('is_admin')->prefix('admin')->group(function () {
         Route::get('/products', [ProductAdminController::class, 'index']);
         Route::post('/products', [ProductAdminController::class, 'store']);
         Route::get('/products/create', [ProductAdminController::class, 'create']);
-        // Tambahkan edit/delete jika perlu
+        // Tambahkan update/delete bila diperlukan
     });
 });

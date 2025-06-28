@@ -9,23 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        // database/migrations/xxxx_xx_xx_create_orders_table.php
-
         Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('recipient_name');
-            $table->string('phone_number');
-            $table->text('address');
-            $table->decimal('total', 12, 2);
-            $table->string('status')->default('Menunggu Pembayaran');
-            $table->timestamps();
-        });
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->text('address');
+        $table->decimal('total', 12, 2);
+        $table->string('status')->default('pending');
+        $table->timestamps();
+    });
 
     }
-
 
     /**
      * Reverse the migrations.
