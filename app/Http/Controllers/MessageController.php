@@ -12,7 +12,7 @@ class MessageController extends Controller
     public function index(Request $request)
     {
         $userId = Auth::id();
-        $partnerId = $request->query('partner_id'); // id admin atau user lawan
+        $partnerId = $request->query('partner_id');
 
         $messages = Message::where(function ($q) use ($userId, $partnerId) {
                 $q->where('sender_id', $userId)->where('receiver_id', $partnerId);
@@ -41,5 +41,37 @@ class MessageController extends Controller
         ]);
 
         return response()->json($message, 201);
+    }
+
+    // Cek jumlah pesan yang belum dibaca oleh user login
+    public function checkUnread($userId)
+    {
+        if (Auth::id() !== (int) $userId) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $count = Message::where('receiver_id', $userId)
+            ->whereNull('read_at')
+            ->count();
+
+        return response()->json(['unread' => $count]);
+    }
+
+    // Tandai semua pesan dari partner sebagai sudah dibaca
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'partner_id' => 'required|exists:users,id'
+        ]);
+
+        $userId = Auth::id();
+        $partnerId = $request->partner_id;
+
+        Message::where('sender_id', $partnerId)
+            ->where('receiver_id', $userId)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return response()->json(['status' => 'ok']);
     }
 }

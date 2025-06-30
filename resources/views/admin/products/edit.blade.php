@@ -74,6 +74,9 @@
     <label>Harga</label>
     <input type="number" name="price" value="{{ old('price', $product->price) }}" required>
 
+    <label>Stok</label> <!-- ✅ Kolom tambahan untuk stok -->
+    <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" min="0" required>
+
     <label>Kategori</label>
     <select name="category_id" required>
       @foreach($categories as $category)

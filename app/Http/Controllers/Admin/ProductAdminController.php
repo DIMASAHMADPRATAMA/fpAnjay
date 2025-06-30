@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\Message;
+use Illuminate\Support\Facades\Auth;
 
 class ProductAdminController extends Controller
 {
@@ -14,18 +16,26 @@ class ProductAdminController extends Controller
     public function index()
     {
         $products = Product::with('category')->get();
-        $users = User::all();
-        return view('admin.dashboard', compact('products', 'users'));
+        $users = User::where('role', 'user')->get();
+
+        $adminId = Auth::id();
+        $unreadByUser = Message::where('receiver_id', $adminId)
+            ->whereNull('read_at')
+            ->groupBy('sender_id')
+            ->selectRaw('sender_id, COUNT(*) as total')
+            ->pluck('total', 'sender_id');
+
+        return view('admin.dashboard', compact('products', 'users', 'unreadByUser'));
     }
 
-    // ✅ Form tambah produk
+    // ✅ Menampilkan form tambah produk
     public function create()
     {
         $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
 
-    // ✅ Simpan produk baru
+    // ✅ Menyimpan produk baru
     public function store(Request $request)
     {
         $request->validate([
@@ -41,15 +51,16 @@ class ProductAdminController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    // ✅ Form edit produk
+    // ✅ Menampilkan form edit produk
     public function edit($id)
     {
         $product = Product::findOrFail($id);
         $categories = Category::all();
+
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    // ✅ Simpan perubahan produk
+    // ✅ Menyimpan update produk
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -66,7 +77,7 @@ class ProductAdminController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
-    // ✅ Hapus produk
+    // ✅ Menghapus produk
     public function destroy($id)
     {
         $product = Product::findOrFail($id);

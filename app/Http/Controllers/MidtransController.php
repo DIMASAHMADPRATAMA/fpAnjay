@@ -12,7 +12,8 @@ class MidtransController extends Controller
     {
         MidtransConfig::init();
 
-        $orderId = uniqid('ORDER-');
+        // Ambil order_id dari request, fallback ke uniqid jika tidak ada
+        $orderId = $request->order_id ?? uniqid('ORDER-');
         $total = $request->total ?? 10000;
 
         $params = [
@@ -23,6 +24,9 @@ class MidtransController extends Controller
             'customer_details' => [
                 'first_name' => auth()->user()->name ?? 'User',
                 'email' => auth()->user()->email ?? 'user@example.com',
+                'billing_address' => [
+                    'address' => $request->address ?? 'Alamat tidak tersedia'
+                ]
             ]
         ];
 
@@ -40,6 +44,4 @@ class MidtransController extends Controller
             ], 500);
         }
     }
-
-    
 }

@@ -25,6 +25,22 @@
       margin-bottom: 30px;
     }
 
+    .back-button {
+      display: inline-block;
+      margin-bottom: 20px;
+      background: #6c757d;
+      color: white;
+      padding: 10px 16px;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #5a6268;
+    }
+
     label {
       font-weight: bold;
       display: block;
@@ -78,6 +94,8 @@
 </head>
 <body>
   <div class="container">
+    <a href="{{ route('admin.products.index') }}" class="back-button">🔙 Kembali</a>
+
     <h1>Tambah Produk</h1>
 
     @if(session('success'))
@@ -95,6 +113,10 @@
       <label for="price">Harga:</label>
       <input type="number" id="price" name="price" required>
 
+      <!-- ✅ Tambahan stok -->
+      <label for="stock">Stok:</label>
+      <input type="number" id="stock" name="stock" required>
+
       <label for="description">Deskripsi:</label>
       <textarea id="description" name="description" rows="3"></textarea>
 
@@ -108,7 +130,6 @@
           <option value="{{ $category->id }}">{{ $category->name }}</option>
         @endforeach
       </select>
-      
 
       <button type="submit">Simpan Produk</button>
     </form>

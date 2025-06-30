@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
@@ -27,7 +26,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -61,22 +59,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // 🧾 Checkout & Riwayat Order
     Route::post('/checkout', [OrderController::class, 'checkout']);
+    Route::post('/checkout/direct', [OrderController::class, 'checkoutDirect']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
     // 💳 Midtrans Payment
     Route::post('/midtrans/transaction', [MidtransController::class, 'createTransaction']);
     Route::post('/midtrans/callback', [MidtransController::class, 'handleCallback']);
 
-    // 🛠 Debug opsional
-    Route::post('/debug-update', function (Request $request) {
-        try {
-            $user = \App\Models\User::first();
-            $user->update($request->only(['name', 'email']));
-            return $user;
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    });
+    // 💬 Pesan & Chat
+    Route::get('/messages', [MessageController::class, 'index']);
+    Route::post('/messages', [MessageController::class, 'store']);
+    Route::get('/chat/check-unread/{userId}', [MessageController::class, 'checkUnread']);
+    Route::post('/chat/mark-read', [MessageController::class, 'markAsRead']);
 
     /*
     |--------------------------------------------------------------------------
@@ -87,13 +81,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/products', [ProductAdminController::class, 'index']);
         Route::post('/products', [ProductAdminController::class, 'store']);
         Route::get('/products/create', [ProductAdminController::class, 'create']);
-        // Tambahkan update/delete bila diperlukan
+        // Tambahkan edit/update/delete jika perlu
     });
 
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/messages', [MessageController::class, 'index']);
-        Route::post('/messages', [MessageController::class, 'store']);
-});
+    // 🛠 Debug opsional (boleh dihapus saat production)
+    Route::post('/debug-update', function (Request $request) {
+        try {
+            $user = \App\Models\User::first();
+            $user->update($request->only(['name', 'email']));
+            return $user;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
 
 });

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    protected $fillable = ['sender_id', 'receiver_id', 'message'];
+    protected $fillable = ['sender_id', 'receiver_id', 'message', 'read_at'];
 
     public function sender()
     {
@@ -17,4 +17,5 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+    
 }
