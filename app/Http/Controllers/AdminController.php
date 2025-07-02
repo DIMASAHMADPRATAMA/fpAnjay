@@ -2,35 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\Order;
 
 class AdminController extends Controller
 {
-    public function dashboard() {
-        return view('admin.dashboard');
+    // Halaman Dashboard: tampilkan semua data (produk, user, pesanan)
+    public function dashboard()
+    {
+        $products = Product::with('category')->get();
+        $users = User::all();
+        $orders = Order::with(['user', 'items.product'])->latest()->get(); // ✅ include items & product
+
+        return view('admin.dashboard', compact('products', 'users', 'orders'));
     }
 
-    public function index() {
-        $products = Product::all();
-        return view('admin.products.index', compact('products'));
+    // Halaman edit status pesanan
+    public function editOrder($id)
+    {
+        $order = Order::with('user')->findOrFail($id);
+
+        // ✅ ubah path view ke folder yang benar
+        return view('admin.products.editOrder', compact('order'));
     }
 
-    public function create() {
-        return view('admin.products.create');
-    }
+    // Proses update status pesanan
+    public function updateOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
 
-    public function store(Request $request) {
-        $validated = $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'image_url' => 'nullable|url',
-            'description' => 'nullable'
+        // ✅ validasi disesuaikan dengan enum di database
+        $request->validate([
+            'payment_status'   => 'required|in:unpaid,paid',
+            'shipping_status'  => 'required|in:pending,processing,shipped',
         ]);
 
-        Product::create($validated);
-        return redirect()->route('admin.products')->with('success', 'Produk berhasil ditambahkan');
-    }
+        $order->update([
+            'payment_status'  => $request->payment_status,
+            'shipping_status' => $request->shipping_status,
+        ]);
 
-    
+        return redirect()->route('admin.dashboard')->with('success', 'Status pesanan berhasil diperbarui.');
+    }
 }

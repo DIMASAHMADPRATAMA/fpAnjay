@@ -22,10 +22,13 @@ use App\Http\Controllers\MidtransController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// 🛍 Produk & Kategori (Frontend User - Ionic)
+// 🛍 Produk & Kategori
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
+
+// 💳 Midtrans Callback — WAJIB DILUAR auth:sanctum AGAR MIDTRANS BISA AKSES
+Route::post('/midtrans/callback', [MidtransController::class, 'handleCallback']);
 
 /*
 |--------------------------------------------------------------------------
@@ -62,9 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout/direct', [OrderController::class, 'checkoutDirect']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
-    // 💳 Midtrans Payment
+    // 💳 Midtrans Payment (HANYA pembuatan token, bukan callback)
     Route::post('/midtrans/transaction', [MidtransController::class, 'createTransaction']);
-    Route::post('/midtrans/callback', [MidtransController::class, 'handleCallback']);
 
     // 💬 Pesan & Chat
     Route::get('/messages', [MessageController::class, 'index']);
@@ -74,7 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ADMIN ROUTES (Khusus untuk admin, middleware: is_admin)
+    | ADMIN ROUTES (Khusus admin, middleware is_admin)
     |--------------------------------------------------------------------------
     */
     Route::middleware('is_admin')->prefix('admin')->group(function () {
@@ -84,7 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Tambahkan edit/update/delete jika perlu
     });
 
-    // 🛠 Debug opsional (boleh dihapus saat production)
+    // 🛠 Debug opsional
     Route::post('/debug-update', function (Request $request) {
         try {
             $user = \App\Models\User::first();

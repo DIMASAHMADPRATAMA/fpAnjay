@@ -8,50 +8,55 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\Message;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
 class ProductAdminController extends Controller
 {
-    // ✅ Menampilkan daftar produk & user di dashboard
+    // ✅ Halaman Dashboard + Daftar Produk
     public function index()
     {
         $products = Product::with('category')->get();
         $users = User::where('role', 'user')->get();
 
         $adminId = Auth::id();
+
         $unreadByUser = Message::where('receiver_id', $adminId)
             ->whereNull('read_at')
             ->groupBy('sender_id')
             ->selectRaw('sender_id, COUNT(*) as total')
             ->pluck('total', 'sender_id');
 
-        return view('admin.dashboard', compact('products', 'users', 'unreadByUser'));
+        $orders = Order::with('user')->latest()->get();
+
+        return view('admin.dashboard', compact('products', 'users', 'unreadByUser', 'orders'));
     }
 
-    // ✅ Menampilkan form tambah produk
+    // ✅ Form Tambah Produk
     public function create()
     {
         $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
 
-    // ✅ Menyimpan produk baru
+    // ✅ Simpan Produk Baru
     public function store(Request $request)
     {
-        $request->validate([
-            'name'        => 'required|string',
-            'price'       => 'required|numeric',
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'price'       => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'image_url'   => 'nullable|url',
+            'stock'       => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        Product::create($request->all());
+        Product::create($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    // ✅ Menampilkan form edit produk
+    // ✅ Form Edit Produk
     public function edit($id)
     {
         $product = Product::findOrFail($id);
@@ -60,24 +65,25 @@ class ProductAdminController extends Controller
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
-    // ✅ Menyimpan update produk
+    // ✅ Simpan Perubahan Produk
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name'        => 'required|string',
-            'price'       => 'required|numeric',
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'price'       => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'image_url'   => 'nullable|url',
+            'stock'       => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
         ]);
 
         $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $product->update($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
-    // ✅ Menghapus produk
+    // ✅ Hapus Produk
     public function destroy($id)
     {
         $product = Product::findOrFail($id);

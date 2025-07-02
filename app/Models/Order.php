@@ -16,8 +16,10 @@ class Order extends Model
         'courier',
         'total',
         'status',
-        'product_summary',  // tambahkan ini
-        'total_items',      // dan ini
+        'product_summary',
+        'total_items',
+        'payment_status',       // ✅ tambahkan ini
+        'shipping_status',      // ✅ dan ini
     ];
 
     public function user()
