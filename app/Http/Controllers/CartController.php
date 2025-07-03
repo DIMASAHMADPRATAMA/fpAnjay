@@ -5,21 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     // ✅ Ambil semua item keranjang untuk user saat ini
     public function index()
     {
-        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
+        $cartItems = Cart::with('product')
+            ->where('user_id', Auth::id())
+            ->get();
 
         foreach ($cartItems as $item) {
             if ($item->product && $item->product->image_url) {
-                // LANGSUNG pakai image_url karena itu sudah berupa URL lengkap
+                // Pakai image_url langsung
                 $item->product->image = $item->product->image_url;
             } else {
-                // Fallback ke default image lokal
+                // Fallback default image
                 $item->product->image = asset('images/default.png');
             }
         }
@@ -27,7 +28,7 @@ class CartController extends Controller
         return response()->json($cartItems);
     }
 
-    // ✅ Tambahkan item ke keranjang atau update jumlah
+    // ✅ Tambahkan item ke keranjang atau update jumlah dengan benar
     public function add(Request $request)
     {
         $validated = $request->validate([
@@ -35,12 +36,22 @@ class CartController extends Controller
             'quantity' => 'required|numeric|min:1'
         ]);
 
-        $cart = Cart::updateOrCreate(
-            ['user_id' => Auth::id(), 'product_id' => $validated['product_id']],
-            ['quantity' => DB::raw("quantity + {$validated['quantity']}")]
-        );
+        $existingCart = Cart::where('user_id', Auth::id())
+            ->where('product_id', $validated['product_id'])
+            ->first();
 
-        return response()->json($cart);
+        if ($existingCart) {
+            $existingCart->quantity += $validated['quantity'];
+            $existingCart->save();
+            return response()->json($existingCart);
+        } else {
+            $newCart = Cart::create([
+                'user_id' => Auth::id(),
+                'product_id' => $validated['product_id'],
+                'quantity' => $validated['quantity'],
+            ]);
+            return response()->json($newCart);
+        }
     }
 
     // ✅ Hapus item dari keranjang
@@ -49,6 +60,5 @@ class CartController extends Controller
         $cart = Cart::where('user_id', Auth::id())->findOrFail($id);
         $cart->delete();
 
-        return response()->json(['message' => 'Item dihapus dari keranjang']);
-    }
+        return response()->json(['message' => 'Item dihapus dari keranjang']);}
 }

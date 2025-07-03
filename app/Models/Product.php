@@ -19,4 +19,10 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class);
+    }
+
+
 }

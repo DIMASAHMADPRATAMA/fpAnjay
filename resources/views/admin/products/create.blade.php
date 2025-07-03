@@ -90,6 +90,34 @@
       margin-bottom: 20px;
       border-radius: 5px;
     }
+
+  .ukuran-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+    .ukuran-row input[type="text"],
+  .ukuran-row input[type="number"] {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 120px;
+  }
+
+    .ukuran-row button {
+      background: red;
+      padding: 8px 12px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .ukuran-row button:hover {
+      background: darkred;
+    }
   </style>
 </head>
 <body>
@@ -113,7 +141,6 @@
       <label for="price">Harga:</label>
       <input type="number" id="price" name="price" required>
 
-      <!-- ✅ Tambahan stok -->
       <label for="stock">Stok:</label>
       <input type="number" id="stock" name="stock" required>
 
@@ -131,8 +158,54 @@
         @endforeach
       </select>
 
-      <button type="submit">Simpan Produk</button>
-    </form>
-  </div>
+      <!-- ✅ Tambahan input ukuran sepatu -->
+    <label><strong>Ukuran & Stok</strong> (Opsional untuk Produk dengan Variasi):</label>
+    <div id="ukuran-container"></div>
+          <div id="ukuran-container">
+            <!-- baris ukuran akan ditambahkan di sini -->
+          </div>
+
+          <button type="button" onclick="tambahUkuran()">+ Tambah Ukuran</button>
+
+          <br><br>
+          <button type="submit">Simpan Produk</button>
+        </form>
+      </div>
+
+<script>
+function tambahUkuran() {
+  const container = document.getElementById('ukuran-container');
+
+  const row = document.createElement('div');
+  row.className = 'ukuran-row';
+
+  const inputUkuran = document.createElement('input');
+  inputUkuran.type = 'text';
+  inputUkuran.name = 'sizes[]';
+  inputUkuran.placeholder = 'Ukuran (ex: M, 42)';
+  inputUkuran.required = false;
+
+  const inputStok = document.createElement('input');
+  inputStok.type = 'number';
+  inputStok.name = 'stocks[]';
+  inputStok.placeholder = 'Stok';
+  inputStok.min = 0;
+  inputStok.required = false;
+
+  const hapusBtn = document.createElement('button');
+  hapusBtn.type = 'button';
+  hapusBtn.innerHTML = '🗑️';
+  hapusBtn.className = 'hapus-btn';
+  hapusBtn.onclick = () => row.remove();
+
+  row.appendChild(inputUkuran);
+  row.appendChild(inputStok);
+  row.appendChild(hapusBtn);
+
+  container.appendChild(row);
+}
+
+</script>
+
 </body>
 </html>

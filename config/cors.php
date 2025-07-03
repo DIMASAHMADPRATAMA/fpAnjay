@@ -20,7 +20,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:8100'], // untuk Ionic serve
+    'allowed_origins' => ['https://www.sadaraza.my.id/api'],
 
     'allowed_headers' => ['*'],
 

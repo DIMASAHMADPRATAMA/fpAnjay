@@ -40,7 +40,7 @@
       transition: background 0.3s;
     }
     .add-btn:hover { background: #0056b3; }
-    .btn-edit { background:rgb(139, 139, 138); color: black; }
+    .btn-edit { background :#ffc107; color: black; }
     .btn-delete { background: #dc3545; color: white; border: none; cursor: pointer; }
     .btn-message { background: #17a2b8; color: white; }
     .success-message {
@@ -165,6 +165,7 @@
           <th>Nama</th>
           <th>Harga</th>
           <th>Kategori</th>
+          <th>Ukuran</th> 
           <th>Stok</th>
           <th>Deskripsi</th>
           <th>Gambar</th>
@@ -177,6 +178,20 @@
           <td data-label="Nama">{{ $p->name }}</td>
           <td data-label="Harga">Rp{{ number_format($p->price, 0, ',', '.') }}</td>
           <td data-label="Kategori">{{ $p->category->name ?? '-' }}</td>
+          @php
+            $ukuran = is_array($p->size) ? $p->size : json_decode($p->size, true);
+          @endphp
+
+          <td data-label="Ukuran">
+            @if(is_array($ukuran))
+              @foreach($ukuran as $u)
+                <div>{{ $u['size'] }} (Stok: {{ $u['stock'] }})</div>
+              @endforeach
+            @else
+              <em>Tidak tersedia</em>
+            @endif
+          </td>
+
           <td data-label="Stok">{{ $p->stock }}</td>
           <td data-label="Deskripsi">{{ $p->description }}</td>
           <td data-label="Gambar">

@@ -74,8 +74,12 @@
     <label>Harga</label>
     <input type="number" name="price" value="{{ old('price', $product->price) }}" required>
 
+    <label>Ukuran (opsional)</label>
+    <input type="text" name="size" value="{{ old('size', $product->size) }}" placeholder="Contoh: S, M, L atau 40, 41, 42">
+
     <label>Stok</label> <!-- ✅ Kolom tambahan untuk stok -->
     <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" min="0" required>
+
 
     <label>Kategori</label>
     <select name="category_id" required>

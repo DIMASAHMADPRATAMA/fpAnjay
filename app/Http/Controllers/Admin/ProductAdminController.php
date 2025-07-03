@@ -49,6 +49,7 @@ class ProductAdminController extends Controller
             'image_url'   => 'nullable|url',
             'stock'       => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
+            'size'        => 'nullable|string|max:50',
         ]);
 
         Product::create($validated);
@@ -68,14 +69,15 @@ class ProductAdminController extends Controller
     // ✅ Simpan Perubahan Produk
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'image_url'   => 'nullable|url',
-            'stock'       => 'required|integer|min:0',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+    $validated = $request->validate([
+        'name'        => 'required|string|max:255',
+        'price'       => 'required|numeric|min:0',
+        'description' => 'nullable|string',
+        'image_url'   => 'nullable|url',
+        'stock'       => 'required|integer|min:0',
+        'category_id' => 'required|exists:categories,id',
+        'size'        => 'nullable|string|max:50', // ✅ tambahkan ini
+    ]);
 
         $product = Product::findOrFail($id);
         $product->update($validated);

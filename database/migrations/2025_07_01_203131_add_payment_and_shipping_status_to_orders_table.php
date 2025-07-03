@@ -9,19 +9,29 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
 {
     Schema::table('orders', function (Blueprint $table) {
-        $table->string('payment_status')->default('pending');
-        $table->string('shipping_status')->default('pending');
+        if (!Schema::hasColumn('orders', 'payment_status')) {
+            $table->string('payment_status')->default('pending');
+        }
+        if (!Schema::hasColumn('orders', 'shipping_status')) {
+            $table->string('shipping_status')->default('pending');
+        }
     });
 }
 
-public function down()
+public function down(): void
 {
     Schema::table('orders', function (Blueprint $table) {
-        $table->dropColumn(['payment_status', 'shipping_status']);
+        if (Schema::hasColumn('orders', 'payment_status')) {
+            $table->dropColumn('payment_status');
+        }
+        if (Schema::hasColumn('orders', 'shipping_status')) {
+            $table->dropColumn('shipping_status');
+        }
     });
 }
+
 
 };
